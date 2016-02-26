@@ -40,6 +40,8 @@ typedef struct {
 
 state_data_t state;
 
+SYSTEM_MODE(SEMI_AUTOMATIC);
+
 void setup()
 {
     Serial.begin(115200);
@@ -79,6 +81,8 @@ void setup()
 
 
     //enableSPI();
+
+    //Particle.connect();
 }
 
 //byte rxBuffer[120];
@@ -90,7 +94,7 @@ void loop()
     while (Serial1.available())
     {
         byte inByte = Serial1.read();
-        //Serial.write(inByte);
+        Serial.write(inByte);
         //sendByte(inByte);
 
         receiveNmeaByte((char)inByte);
@@ -107,6 +111,10 @@ void loop()
 
 
 
+    }
+
+    while (Serial.available()){
+        Serial.write(Serial.read());
     }
 
     if (state.bleTxBufferSize > 0 &&
@@ -131,7 +139,7 @@ void loop()
 void nmeaSentenceCallback(nmea_sentence_t *sentence)
 {
     //Serial.write("Received sentence: ");
-    //Serial.write(sentence->bytes,sentence->length);
+    Serial.write(sentence->bytes,sentence->length);
 
 
 
@@ -183,9 +191,9 @@ void sendNextBleQueuedMessage()
         // copy remaining bytes down
         memcpy(state.bleTxBuffer,&state.bleTxBuffer[messageSize],state.bleTxBufferSize);
 
-        Serial.print("Sent message, ");
-        Serial.print(state.bleTxBufferSize);
-        Serial.println(" chars left in queue.");
+        //Serial.print("Sent message, ");
+        //Serial.print(state.bleTxBufferSize);
+        //Serial.println(" chars left in queue.");
     } else {
         Serial.println("Packet send failed, going to retry.");
     }
